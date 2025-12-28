@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLAMES Game - Relationship Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .flames-legend {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            font-size: 0.85em;
+            border: 2px solid #e0e0e0;
+        }
+
+        .flames-legend h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .flames-legend ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .flames-legend li {
+            color: #555;
+            padding: 5px;
+            background: white;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        .flames-legend li:hover {
+            transform: translateX(5px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h2 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: pulse 1s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .result .full-result {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .result .message {
+            font-size: 1.2em;
+            margin-top: 15px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .result .details {
+            margin-top: 20px;
+            font-size: 0.95em;
+            opacity: 0.9;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .result .names {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .error {
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            animation: shake 0.5s;
+            font-weight: 500;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .reset-btn {
+            margin-top: 15px;
+            background: rgba(255,255,255,0.2);
+            padding: 12px;
+            font-size: 14px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .heart {
+            display: inline-block;
+            animation: heartbeat 1s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .flames-legend ul {
+                grid-template-columns: 1fr;
+            }
+
+            .result h2 {
+                font-size: 2.5em;
+            }
+
+            .result .full-result {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>❤️ FLAMES Game ❤️</h1>
+        <p class="subtitle">Discover your relationship compatibility!</p>
+
+        <div class="flames-legend">
+            <h3>🔥 What is FLAMES?</h3>
+            <ul>
+                <li><strong>F</strong> - Friends 🤝</li>
+                <li><strong>L</strong> - Love 💖</li>
+                <li><strong>A</strong> - Affection 💕</li>
+                <li><strong>M</strong> - Marriage 💍</li>
+                <li><strong>E</strong> - Enemy 😅</li>
+                <li><strong>S</strong> - Siblings 👫</li>
+            </ul>
+        </div>
+
+        <form id="flamesForm">
+            <div class="form-group">
+                <label for="name1">First Name</label>
+                <input type="text" id="name1" name="name1" required placeholder="Enter first name" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="name2">Second Name</label>
+                <input type="text" id="name2" name="name2" required placeholder="Enter second name" autocomplete="off">
+            </div>
+
+            <button type="submit">Calculate FLAMES <span class="heart">❤️</span></button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function removeCommonChars(name1, name2) {
+            // Convert to lowercase and remove spaces
+            let arr1 = name1.toLowerCase().replace(/\s/g, '').split('');
+            let arr2 = name2.toLowerCase().replace(/\s/g, '').split('');
+            
+            // Remove common characters
+            for (let i = 0; i < arr1.length; i++) {
+                let char = arr1[i];
+                let index = arr2.indexOf(char);
+                
+                if (index !== -1) {
+                    arr1.splice(i, 1);
+                    arr2.splice(index, 1);
+                    i--; // Adjust index after removal
+                }
+            }
+            
+            return arr1.length + arr2.length;
+        }
+
+        function calculateFlames(count) {
+            const flames = ['F', 'L', 'A', 'M', 'E', 'S'];
+            const flamesFull = {
+                'F': 'Friends',
+                'L': 'Love',
+                'A': 'Affection',
+                'M': 'Marriage',
+                'E': 'Enemy',
+                'S': 'Siblings'
+            };
+            
+            let index = 0;
+            
+            while (flames.length > 1) {
+                index = (index + count - 1) % flames.length;
+                flames.splice(index, 1);
+                
+                if (index >= flames.length && flames.length > 0) {
+                    index = 0;
+                }
+            }
+            
+            const result = flames[0];
+            return {
+                char: result,
+                full: flamesFull[result]
+            };
+        }
+
+        function getResultEmoji(char) {
+            const emojis = {
+                'F': '🤝',
+                'L': '💖',
+                'A': '💕',
+                'M': '💍',
+                'E': '😅',
+                'S': '👫'
+            };
+            return emojis[char] || '❤️';
+        }
+
+        function getMessage(char) {
+            const messages = {
+                'F': "You two are destined to be great friends! 🤝",
+                'L': "Love is in the air! 💖",
+                'A': "There's a special affection between you! 💕",
+                'M': "Wedding bells might ring soon! 💍",
+                'E': "Oops! Looks like there might be some conflicts! 😅",
+                'S': "You'll be like siblings - always there for each other! 👫"
+            };
+            return messages[char] || "";
+        }
+
+        document.getElementById('flamesForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name1 = document.getElementById('name1').value.trim();
+            const name2 = document.getElementById('name2').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            // Validation
+            if (!name1 || !name2) {
+                resultDiv.innerHTML = '<div class="error">⚠️ Please enter both names!</div>';
+                return;
+            }
+
+            if (name1.toLowerCase() === name2.toLowerCase()) {
+                resultDiv.innerHTML = '<div class="error">⚠️ Please enter different names!</div>';
+                return;
+            }
+            
+            // Calculate remaining characters
+            const count = removeCommonChars(name1, name2);
+            
+            // Perfect match case
+            if (count === 0) {
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h2>💕 Perfect Match! 💕</h2>
+                        <p class="message">All characters are common! You two are absolutely perfect for each other!</p>
+                        <p class="names">${name1} & ${name2}</p>
+                        <button class="reset-btn" onclick="resetForm()">Try Again</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate FLAMES
+            const result = calculateFlames(count);
+            const emoji = getResultEmoji(result.char);
+            const message = getMessage(result.char);
+            
+            resultDiv.innerHTML = `
+                <div class="result">
+                    <h2>${emoji} ${result.char} ${emoji}</h2>
+                    <p class="full-result">${result.full}</p>
+                    <p class="message">${message}</p>
+                    <div class="details">
+                        <p>Character count: ${count}</p>
+                        <p class="names">${name1} & ${name2}</p>
+                    </div>
+                    <button class="reset-btn" onclick="resetForm()">Try Again</button>
+                </div>
+            `;
+        });
+
+        function resetForm() {
+            document.getElementById('flamesForm').reset();
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('name1').focus();
+        }
+
+        // Focus on first input on load
+        window.addEventListener('load', function() {
+            document.getElementById('name1').focus();
+        });
+    </script>
+</body>
+</html>
